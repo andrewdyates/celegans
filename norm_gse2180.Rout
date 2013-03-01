@@ -1,0 +1,91 @@
+
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(SCAN.UPC)
+Loading required package: Biobase
+Loading required package: BiocGenerics
+
+Attaching package: ‘BiocGenerics’
+
+The following object(s) are masked from ‘package:stats’:
+
+    xtabs
+
+The following object(s) are masked from ‘package:base’:
+
+    anyDuplicated, cbind, colnames, duplicated, eval, Filter, Find,
+    get, intersect, lapply, Map, mapply, mget, order, paste, pmax,
+    pmax.int, pmin, pmin.int, Position, rbind, Reduce, rep.int,
+    rownames, sapply, setdiff, table, tapply, union, unique
+
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: oligo
+Loading required package: oligoClasses
+Loading package bit 1.1-9
+package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
+creators: bit bitwhich
+coercion: as.logical as.integer as.bit as.bitwhich which
+operator: ! & | xor != ==
+querying: print length any all min max range sum summary
+bit access: length<- [ [<- [[ [[<-
+for more help type ?bit
+Loading package ff2.2-10
+- getOption("fftempdir")=="/tmp/RtmpmVXMNW"
+
+- getOption("ffextension")=="ff"
+
+- getOption("ffdrop")==TRUE
+
+- getOption("fffinonexit")==TRUE
+
+- getOption("ffpagesize")==65536
+
+- getOption("ffcaching")=="mmnoflush"  -- consider "ffeachflush" if your system stalls on large writes
+
+- getOption("ffbatchbytes")==16777216 -- consider a different value for tuning your system
+
+- getOption("ffmaxbytes")==536870912 -- consider a different value for tuning your system
+
+Welcome to oligoClasses version 1.20.0
+================================================================================
+Welcome to oligo version 1.22.0
+================================================================================
+Loading required package: Biostrings
+Loading required package: IRanges
+Warning message:
+replacing previous import ‘show’ when loading ‘oligo’ 
+> library(celegansceentrezgprobe)
+Loading required package: AnnotationDbi
+> 
+> fname.ptn <- "/fs/lustre/share/yates.c.elegans.sp13/GSE2180_RAW/*.CEL.gz"
+> out.fpath <- "/fs/lustre/share/yates.c.elegans.sp13/"
+> GSE2180.ALL.SCAN = SCAN(fname.ptn, probeSummaryPackage=celegansceentrezgprobe, outFilePath=paste0(out.fpath, "GSE2180.ALL.SCAN.txt"))
+Loading required package: pd.celegans
+Loading required package: RSQLite
+Loading required package: DBI
+Platform design info loaded.
+Reading in : /fs/lustre/share/yates.c.elegans.sp13/GSE2180_RAW/GSM39425.CEL.gz
+
+Execution halted

@@ -1,0 +1,15 @@
+#PBS -N GSE2180_norm
+#PBS -l nodes=1:ppn=12
+#PBS -j oe
+#PBS -S /bin/bash
+#PBS -l walltime=99:00:00
+
+#tdate=$(date +%%T)
+
+set -x
+cd /nfs/01/osu6683/
+source .bash_profile
+
+cd /fs/lustre/share/yates.c.elegans.sp13
+R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/celegans_source_code/norm_gse2180.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse2180.Rout
+
