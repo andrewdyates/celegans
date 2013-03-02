@@ -10,5 +10,6 @@ set -x
 cd /nfs/01/osu6683/
 source .bash_profile
 
-cd /fs/lustre/share/yates.c.elegans.sp13/celegans_source_code
-R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/celegans_source_code/norm_gse9665.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse9665.Rout
+cd /fs/lustre/share/yates.c.elegans.sp13
+/usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/norm_gse9665.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse9665.Rout
+

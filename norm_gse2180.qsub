@@ -11,5 +11,5 @@ cd /nfs/01/osu6683/
 source .bash_profile
 
 cd /fs/lustre/share/yates.c.elegans.sp13
-R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/celegans_source_code/norm_gse2180.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse2180.Rout
+/usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/norm_gse2180.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse2180.Rout
 
