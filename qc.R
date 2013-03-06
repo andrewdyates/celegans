@@ -71,7 +71,7 @@ inspect <- function(M.SCAN, M.UPC, name="GSE2180", th.probe=0.6, th.array=0.21) 
     density(M.UPC[row.filt,!col.filt], main=paste0(name," UPC Array Bad (mean<",th.array,")"))
   }
   dev.off()
-  R = list()
+o  R = list()
   R$row.filt <- row.filt
   R$col.filt <- col.filt
   R
@@ -81,7 +81,9 @@ GSE2180.R <- inspect(GSE2180.ALL.SCAN, GSE2180.ALL.UPC, "GSE2180", 0.6, 0.21)
 GSE9665.R <- inspect(GSE9665.ALL.SCAN, GSE9665.ALL.UPC, "GSE9665", 0.6, 0.21)
 
 GSE2180 <- GSE2180.ALL.SCAN[GSE2180.R$row.filt, GSE2180.R$col.filt]
+GSE2180.UPC <- GSE2180.ALL.UPC[GSE2180.R$row.filt, GSE2180.R$col.filt]
 GSE9665 <- GSE9665.ALL.SCAN[GSE9665.R$row.filt, GSE9665.R$col.filt]
+GSE9665.UPC <- GSE9665.ALL.UPC[GSE9665.R$row.filt, GSE9665.R$col.filt]
 
 test.var.diff <- function(var, M) {
   # Return fraction of rows with significant diff expression with batch variable.
@@ -91,11 +93,31 @@ test.var.diff <- function(var, M) {
   mean(pp < 0.05)
 }
 test.var.diff(GSE9665$primer, exprs(GSE9665))
-[1] 0
+## [1] 0
 
+## MERGE DATASETS
+## ==============================
+qq <- match(rownames(GSE2180.ALL.SCAN), rownames(GSE9665.ALL.SCAN))
+all(qq == 1:17079) # ok, the row names are all aligned. We can join these matrices.
+##[1] TRUE
+
+BOTH.ALL.SCAN <- cbind(exprs(GSE2180.ALL.SCAN), exprs(GSE9665.ALL.SCAN))
+BOTH.ALL.UPC  <- cbind(exprs(GSE2180.ALL.UPC), exprs(GSE9665.ALL.UPC))
+
+both.col.filt <- c(GSE2180.R$col.filt, GSE9665.R$col.filt)
+both.row.filt <- GSE2180.R$row.filt | GSE9665.R$row.filt
+
+GSE2180.GSE9665 <- BOTH.ALL.SCAN[both.row.filt, both.col.filt]
+GSE2180.GSE9665.UPC <- BOTH.ALL.UPC[both.row.filt, both.col.filt]
+print(dim(GSE2180.GSE9665))
+
+# Intersection Size: [1] 4327
+# Union Size: [1] 6279
 
 ## EXPORT DATA
-save(GSE2180, file="../GSE2180.clean.RData")
-save(GSE9665, file="../GSE9665.clean.RData")
+save(GSE2180, GSE2180.UPC, file="../GSE2180.clean.RData")
+save(GSE9665, GSE9665.UPC, file="../GSE9665.clean.RData")
+save(GSE2180.GSE9665, GSE2180.GSE9665.UPC, file="../GSE2180.GSE9665.clean.RData")
 write.table(exprs(GSE2180), file="../GSE2180.clean.tab", quote=FALSE, sep="\t")
 write.table(exprs(GSE9665), file="../GSE9665.clean.tab", quote=FALSE, sep="\t")
+write.table(GSE2180.GSE9665, file="../GSE2180.GSE9665.clean.tab", quote=FALSE, sep="\t")
