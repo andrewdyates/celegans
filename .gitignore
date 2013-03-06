@@ -4,6 +4,8 @@
 *~
 \#*
 .\#*
+*.pdf
+.DS*
 
 # Example code in package build process
 *-Ex.R

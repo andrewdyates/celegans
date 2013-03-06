@@ -4,7 +4,6 @@ download.file("http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCD
 
 source("http://bioconductor.org/biocLite.R")
 biocLite("org.Ce.eg.db")
-
 biocLite("pd.celegans")
 
 ## optional other packages
