@@ -22,8 +22,10 @@ pData(phenoData(GSE2180.ALL.UPC)) <- AttrT
 ## ------------------------------
 AttrT <- read.table("../GSE9665_GPL200.samples.tab", sep="\t", header=TRUE, row.names=1)
 AttrT <- as.data.frame(t(AttrT))
-AttrT$knockout <- as.factor(sub("mex-3 (\\w+-[0-9,]+)? ?(\\d+) (\\w)", AttrT$title, replacement="\\1"))
-AttrT$num <- as.factor(sub("mex-3 (\\w+-[0-9,]+)? ?(\\d+) (\\w)", AttrT$title, replacement="\\2"))
+AttrT$knockout <- sub("mex-3 (\\w+-[0-9,]+)? ?(\\d+) (\\w).*", AttrT$title, replacement="\\1")
+AttrT$knockout[AttrT$knockout==""] <- "WT"
+AttrT$knockout <- as.factor(AttrT$knockout)
+AttrT$num <- as.factor(sub("mex-3 (\\w+-[0-9,]+)? ?(\\d+) (\\w).*", AttrT$title, replacement="\\2"))
 AttrT$primer <- as.factor(sub("mex-3 (\\w+-[0-9,]+)? ?(\\d+) (\\w).*", AttrT$title, replacement="\\3"))
 
 sampleNames(GSE9665.ALL.SCAN) <- sub(".cel.gz", "", sampleNames(GSE9665.ALL.SCAN))
@@ -71,7 +73,7 @@ inspect <- function(M.SCAN, M.UPC, name="GSE2180", th.probe=0.6, th.array=0.21) 
     density(M.UPC[row.filt,!col.filt], main=paste0(name," UPC Array Bad (mean<",th.array,")"))
   }
   dev.off()
-o  R = list()
+  R = list()
   R$row.filt <- row.filt
   R$col.filt <- col.filt
   R
@@ -92,29 +94,57 @@ test.var.diff <- function(var, M) {
   pp <- p.adjust(f.pvalue(M,mod,mod0), method="BH")
   mean(pp < 0.05)
 }
-test.var.diff(GSE9665$primer, exprs(GSE9665))
+## > test.var.diff(GSE9665$primer, exprs(GSE9665))
 ## [1] 0
+## > test.var.diff(GSE9665$knockout, exprs(GSE9665))
+## [1] 0.4686347
+## > test.var.diff(GSE9665$num, exprs(GSE9665))
+## [1] 0.7117887
+## GSE9665 covariate correction
+
+
+### GSE9665 covariate correction
+### ------------------------------
+
+# 1. Remove single 101.
+filt101 <- GSE9665$num!="101"
+GSE9665 <- GSE9665[,filt101]
+GSE9665$num <- as.factor(as.character(GSE9665$num))
+GSE9665.UPC <- GSE9665.UPC[,filt101]
+GSE9665.UPC$num <- as.factor(as.character(GSE9665.UPC$num))
+# 2. Covariate correct num while controlling for knockout
+mod <- model.matrix(~GSE9665$knockout)
+E1 <- ComBat(exprs(GSE9665), batch=GSE9665$num, mod=mod)
+GSE9665<-ExpressionSet(E1, phenoData=phenoData(GSE9665))
+
+## > test.var.diff(GSE9665$num, exprs(GSE9665))
+## [1] 0.6504176
+## > test.var.diff(GSE9665$knockout, exprs(GSE9665))
+## [1] 0.499126
+## > GSE9665<-ExpressionSet(E1, phenoData=phenoData(GSE9665))
+## > test.var.diff(GSE9665$num, exprs(GSE9665))
+## [1] 0
+## > test.var.diff(GSE9665$knockout, exprs(GSE9665))
+## [1] 0.5754515
+
 
 ## MERGE DATASETS
 ## ==============================
-qq <- match(rownames(GSE2180.ALL.SCAN), rownames(GSE9665.ALL.SCAN))
-all(qq == 1:17079) # ok, the row names are all aligned. We can join these matrices.
-##[1] TRUE
+batch <- c(rep("GSE2180", dim(GSE2180)[2]), rep("GSE9665", dim(GSE9665)[2]))
+qq <- match(rownames(exprs(GSE2180)), rownames(exprs(GSE9665)))
+GSE2180.GSE9665 <- cbind(exprs(GSE2180[!is.na(qq),]), exprs(GSE9665[qq[!is.na(qq)],]))
+GSE2180.GSE9665.UPC <- cbind(exprs(GSE2180.UPC[!is.na(qq),]), exprs(GSE9665.UPC[qq[!is.na(qq)],]))
 
-BOTH.ALL.SCAN <- cbind(exprs(GSE2180.ALL.SCAN), exprs(GSE9665.ALL.SCAN))
-BOTH.ALL.UPC  <- cbind(exprs(GSE2180.ALL.UPC), exprs(GSE9665.ALL.UPC))
+col<-rep("blue", length(qq))
+col[batch=="GSE9665"] <- "purple"
+pdf("merged.gse2180.gse9665.boxplots.pdf", width=30, height=10)
+boxplot(ExpressionSet(GSE2180.GSE9665), col=col)
+boxplot(ExpressionSet(GSE2180.GSE9665.UPC), col=col)
+dev.off()
 
-both.col.filt <- c(GSE2180.R$col.filt, GSE9665.R$col.filt)
-both.row.filt <- GSE2180.R$row.filt | GSE9665.R$row.filt
 
-GSE2180.GSE9665 <- BOTH.ALL.SCAN[both.row.filt, both.col.filt]
-GSE2180.GSE9665.UPC <- BOTH.ALL.UPC[both.row.filt, both.col.filt]
-print(dim(GSE2180.GSE9665))
 
-# Intersection Size: [1] 4327
-# Union Size: [1] 6279
-
-## EXPORT DATA
+## ReDo this EXPORT DATA
 save(GSE2180, GSE2180.UPC, file="../GSE2180.clean.RData")
 save(GSE9665, GSE9665.UPC, file="../GSE9665.clean.RData")
 save(GSE2180.GSE9665, GSE2180.GSE9665.UPC, file="../GSE2180.GSE9665.clean.RData")
