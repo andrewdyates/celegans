@@ -1,3 +1,8 @@
+## TODO:
+## Load GPL200 annotations, add to objects
+## Do not batch correct on "mystery number"
+## Re-export
+
 library(sva)
 library(lumi)
 library(celegansceentrezg.db)
