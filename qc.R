@@ -144,7 +144,7 @@ dev.off()
 
 
 
-## ReDo this EXPORT DATA
+## EXPORT DATA
 save(GSE2180, GSE2180.UPC, file="../GSE2180.clean.RData")
 save(GSE9665, GSE9665.UPC, file="../GSE9665.clean.RData")
 save(GSE2180.GSE9665, GSE2180.GSE9665.UPC, file="../GSE2180.GSE9665.clean.RData")
