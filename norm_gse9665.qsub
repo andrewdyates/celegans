@@ -2,7 +2,7 @@
 #PBS -l nodes=1:ppn=12
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -l walltime=24:00:00
+#PBS -l walltime=12:00:00
 
 #tdate=$(date +%%T)
 
@@ -11,5 +11,5 @@ cd /nfs/01/osu6683/
 source .bash_profile
 
 cd /fs/lustre/share/yates.c.elegans.sp13
-/usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/norm_gse9665.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse9665.Rout
+/usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/norm_gse9665.R /fs/lustre/share/yates.c.elegans.sp13/norm_gse9665.NOFILT.Rout
 
