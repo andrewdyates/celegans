@@ -68,8 +68,6 @@ for (i in gold.i) {
 dev.off()
 }
 
-plot.dep.matrix <- function(D, name) {
-}
 plot.compare.dep.matrix <- function(GEO.DCOR, GEO.PCC, SCAN.DCOR, SCAN.PCC, name) {
   pdf(paste0("dCOR.PCC.GEO.SCAN.hist.",name,".pdf"))
   hist(SCAN.DCOR-abs(SCAN.PCC), main=paste(name,"SCAN dCOR - SCAN |PCC|"))
@@ -80,9 +78,9 @@ plot.compare.dep.matrix <- function(GEO.DCOR, GEO.PCC, SCAN.DCOR, SCAN.PCC, name
   dev.off()
 
   pdf(paste0("dCOR.PCC.SCAN.GEO.diff",name,".pdf"), width=20, height=20)
-  heatmap.2(SCAN.DCOR - GEO.DCOR), main="SCAN DCOR - GEO DCOR", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
-  heatmap.2(abs(SCAN.PCC) - abs(GEO.PCC)), main="SCAN |PCC| - GEO |PCC|", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
-  heatmap.2(SCAN.DCOR - abs(GEO.PCC)), main="SCAN DCOR - GEO |PCC|", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
+  heatmap.2(SCAN.DCOR - GEO.DCOR, main="SCAN DCOR - GEO DCOR", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
+  heatmap.2(abs(SCAN.PCC) - abs(GEO.PCC), main="SCAN |PCC| - GEO |PCC|", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
+  heatmap.2(SCAN.DCOR - abs(GEO.PCC), main="SCAN DCOR - GEO |PCC|", symm=T, col=heatmap_cols.near0, breaks=heatmap_breaks.near0, Colv=NULL, symm=T, trace='none')
   dev.off()
 }
 
@@ -121,11 +119,10 @@ calc.deps <- function(M, labels) {
 
   # dcor hclust order
   D.DCOR.r <- as.dist(1-cor(t(R$DCOR), method="pearson")) + dist(R$DCOR)*2
-  Rowv <- rowMeans(R$DCOR, na.rm = TRUE)
-  Rhclust <- as.dendrogram(hclust(D.DCOR.r, method="average"))
-  Rhclust <- reorder(Rhclust, Rowv)
-  R$Rhclust
-  R$rowInd <- order.dendrogram(Rhclust)
+  R$Rowv.dcor <- rowMeans(R$DCOR, na.rm = TRUE)
+  R$Rhclust.dcor <- as.dendrogram(hclust(D.DCOR.r, method="average"))
+  R$Rhclust.dcor <- reorder(R$Rhclust.dcor, R$Rowv.dcor)
+  R$rowInd <- order.dendrogram(R$Rhclust.dcor)
   R
 }
 
@@ -147,7 +144,8 @@ plot.pairs <- function(M, R, labels, name) {
   dev.off()
 }
 
-plot.sploms <- function(CLS, D, name, MIN=0.18) {
+plot.sploms <- function(CLS, D, name, MIN=0.18, scalar=10) {
+  # TODO: return 
   D.DCOR.r <- as.dist(1-cor(t(D$DCOR), method="pearson")) + dist(D$DCOR)
   D.cls.r <- dist(CLS$CLS)
   Rowv <- rowMeans(D$DCOR, na.rm = TRUE)
@@ -161,6 +159,13 @@ plot.sploms <- function(CLS, D, name, MIN=0.18) {
   Rhclust.cls <- reorder(Rhclust.cls, Rowv.cls)
   C.rowInd <- order.dendrogram(Rhclust.cls)
 
+  pdf(paste0("dependency.dendros.",name,".pdf"),width=20,height=8)
+  par(mar=c(10,0,5,0))
+  plot(D$Rhclust.dcor, main=paste(name, "dCOR dendrogram"))
+  plot(Rhclust, main=paste(name, "dCOR+CLS dendrogram"))
+  plot(Rhclust.cls, main=paste(name, "CLS dendrogram"))
+  dev.off()
+
   pdf(paste0("splom.",name,".pdf"), width=12, height=12)
   splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=0.18, reorder=F, main=paste0(name," Original Order, min dCOR=", MIN))
   splom(CLS$CLS[D$rowInd,D$rowInd], D$DCOR[D$rowInd,D$rowInd], asGlyphs=T, MAX=1, MIN=MIN, reorder=F, main=paste0(name, " dCOR Cluster Order, min dCOR=",MIN))
@@ -171,6 +176,19 @@ plot.sploms <- function(CLS, D, name, MIN=0.18) {
   pdf(paste0("splom.summary.",name,".pdf"), width=12, height=12)
   summary.plots(CLS$CLS,D$DCOR, sym=T)
   dev.off()
+
+  width <- ncol(CLS$CLS)*scalar
+  height <- nrow(CLS$CLS)*scalar
+  png(paste0(name,'.raster.glyph.png'), width=width, height=height, units="px", bg="white")
+  par(mar = rep(0, 4)) # set plot margins to 0 before drawing
+  R <- splom(CLS$CLS, D$DCOR, asGlyphs=TRUE, useRaster=TRUE, draw.labs=F)
+  dev.off()
+
+  png(paste0(name,'test.raster.pix.png'), width=width, height=height, units="px", bg="white")
+  par(mar = rep(0, 4)) # set plot margins to 0 before drawing
+  R <- splom(CLS$CLS, D$DCOR, asGlyphs=F, useRaster=TRUE, draw.labs=F)
+  dev.off()
+  
   CD.rowInd
 }
 
@@ -185,7 +203,7 @@ analyze.and.plot <- function(GEO, SCAN, name) {
   R$SCAN.D <- calc.deps(exprs(SCAN[gold.i,]), labels=gold.labels)
   R$GEO.D <- calc.deps(exprs(GEO[gold.i,]), labels=gold.labels)
   plot.dep.matrix(R$SCAN.D, name=paste0("SCAN.GOLD.",name))
-  plot.dep.matrix(R$GEO.D, name=paste0("GEO.GOLD.4mut",name))
+  plot.dep.matrix(R$GEO.D, name=paste0("GEO.GOLD.",name))
   
   plot.pairs(M=exprs(SCAN[gold.i,]), R=R$SCAN.D, labels=gold.labels, name=paste0("SCAN.GOLD.",name))
   plot.pairs(M=exprs(GEO[gold.i,]), R=R$GEO.D, labels=gold.labels, name=paste0("GEO.GOLD.",name))
@@ -207,4 +225,8 @@ all.4mut <- analyze.and.plot(GEO=GSE2180.GEO, SCAN=GSE2180.SCAN, name="4mut")
 # WT+ms
 qq <- GSE2180.GEO$genotype %in% c('N2','ms')
 wt.ms.2mut <- analyze.and.plot(GEO=GSE2180.GEO[,qq], SCAN=GSE2180.SCAN[,qq], name="WT+ms")
+
+# EXAMPLE RASTER OUTPUT
+CLS <- wt.ms.2mut$SCAN.CLS$CLS
+DCOR <- wt.ms.2mut$SCAN.D$DCOR
 

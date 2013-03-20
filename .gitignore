@@ -6,6 +6,7 @@
 .\#*
 *.pdf
 .DS*
+*.png
 
 # Example code in package build process
 *-Ex.R
