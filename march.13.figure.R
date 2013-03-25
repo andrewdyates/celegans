@@ -64,6 +64,15 @@ for (i in gold.i) {
   title <- paste(name, featureData(G)$gold[i])
   plot(time, y, col=cols, pch=20, main=title, ylab="Intensity")
   legend("topleft", pch=20, col=col.scale, legend=levels(G$genotype))
+  plot(time, y, main=paste("No Labels", title), ylab="Intensity")
+}
+dev.off()
+pdf(paste0("tiny.gse2180.time.mutant.gold.plots.",name,".pdf"),width=1,height=1)
+for (i in gold.i) {
+  y <- exprs(G)[i,]
+  title <- paste(name, featureData(G)$gold[i])
+  par(mar = c(0,0,0,0))
+  plot(time, y, pch=20,ylab="", xlab="")
 }
 dev.off()
 }
@@ -159,18 +168,21 @@ plot.sploms <- function(CLS, D, name, MIN=0.18, scalar=10) {
   Rhclust.cls <- reorder(Rhclust.cls, Rowv.cls)
   C.rowInd <- order.dendrogram(Rhclust.cls)
 
-  pdf(paste0("dependency.dendros.",name,".pdf"),width=20,height=8)
-  par(mar=c(10,0,5,0))
-  plot(D$Rhclust.dcor, main=paste(name, "dCOR dendrogram"))
-  plot(Rhclust, main=paste(name, "dCOR+CLS dendrogram"))
-  plot(Rhclust.cls, main=paste(name, "CLS dendrogram"))
-  dev.off()
 
   pdf(paste0("splom.",name,".pdf"), width=12, height=12)
   splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=0.18, reorder=F, main=paste0(name," Original Order, min dCOR=", MIN))
   splom(CLS$CLS[D$rowInd,D$rowInd], D$DCOR[D$rowInd,D$rowInd], asGlyphs=T, MAX=1, MIN=MIN, reorder=F, main=paste0(name, " dCOR Cluster Order, min dCOR=",MIN))
   splom(CLS$CLS[C.rowInd,C.rowInd], D$DCOR[C.rowInd,C.rowInd], asGlyphs=T, MAX=1, MIN=MIN, reorder=F, main=paste0(name, " CLS Cluster Order, min dCOR=",MIN))
   splom(CLS$CLS[CD.rowInd,CD.rowInd], D$DCOR[CD.rowInd,CD.rowInd], asGlyphs=T, MAX=1, MIN=MIN, reorder=F, main=paste0(name, " CLS+DCluster Cluster Order, min dCOR=",MIN))
+  # GSPLOM with package clustering
+  default.order.R <- splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=MIN, reorder=T, main=paste0(name, "Default order with CLS and DCOR, min dCOR=",MIN))
+  # Different border options
+  splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=MIN, reorder=T, main=paste0(name, "Default order with CLS lwd=3 and DCOR, min dCOR=",MIN), lwd=3)
+  splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=MIN, reorder=T, main=paste0(name, "Default order with CLS lwd=3 and DCOR, min dCOR=",MIN), lwd=3, grid.col="#d3dfed")
+  splom(CLS$CLS, D$DCOR, asGlyphs=T, MAX=1, MIN=MIN, reorder=T, main=paste0(name, "Default order with CLS lwd=5 and DCOR, min dCOR=",MIN), lwd=5)
+
+  # no glyph form
+  splom(CLS$CLS, D$DCOR, asGlyphs=F, MAX=1, MIN=MIN, reorder=T, main=paste0(name, "Default order with CLS and DCOR, min dCOR=",MIN))
   dev.off()
 
   pdf(paste0("splom.summary.",name,".pdf"), width=12, height=12)
@@ -179,17 +191,29 @@ plot.sploms <- function(CLS, D, name, MIN=0.18, scalar=10) {
 
   width <- ncol(CLS$CLS)*scalar
   height <- nrow(CLS$CLS)*scalar
-  png(paste0(name,'.raster.glyph.png'), width=width, height=height, units="px", bg="white")
+  png(paste0(name,'dft.raster.glyph.png'), width=width, height=height, units="px", bg="white")
   par(mar = rep(0, 4)) # set plot margins to 0 before drawing
-  R <- splom(CLS$CLS, D$DCOR, asGlyphs=TRUE, useRaster=TRUE, draw.labs=F)
+  R <- splom(CLS$CLS, D$DCOR, asGlyphs=TRUE, useRaster=TRUE, draw.labs=F, reorder=T, MAX=1, MIN=MIN)
   dev.off()
 
-  png(paste0(name,'test.raster.pix.png'), width=width, height=height, units="px", bg="white")
+  png(paste0(name,'dft.raster.pix.png'), width=width, height=height, units="px", bg="white")
   par(mar = rep(0, 4)) # set plot margins to 0 before drawing
-  R <- splom(CLS$CLS, D$DCOR, asGlyphs=F, useRaster=TRUE, draw.labs=F)
+  R <- splom(CLS$CLS, D$DCOR, asGlyphs=F, useRaster=TRUE, draw.labs=F, reorder=T, MAX=1, MIN=MIN)
   dev.off()
-  
-  CD.rowInd
+
+  pdf(paste0("dependency.dendros.",name,".pdf"),width=20,height=8)
+  par(mar=c(10,0,5,0))
+  plot(D$Rhclust.dcor, main=paste(name, "dCOR dendrogram"))
+  plot(Rhclust, main=paste(name, "dCOR+CLS dendrogram"))
+  plot(Rhclust.cls, main=paste(name, "CLS dendrogram"))
+  plot(default.order.R$Rhclust, main=paste(name, "Default order row hclust"))
+  plot(default.order.R$Chclust, main=paste(name, "Default order col hclust"))
+  dev.off()
+
+  RET <- list()
+  RET$default.order.R <- default.order.R
+  RET$CD.rowInd <- CD.rowInd
+  RET
 }
 
 # --------------------
@@ -211,13 +235,18 @@ analyze.and.plot <- function(GEO, SCAN, name) {
   R$SCAN.CLS <- calc.plot.classes(M=exprs(SCAN[gold.i,]), b=GSE2180.SCAN.b, labels=gold.labels, name=paste0("SCAN.GOLD.",name))
   R$GEO.CLS <- calc.plot.classes(M=exprs(GEO[gold.i,]), b=GSE2180.GEO.b, labels=gold.labels, name=paste0("GEO.GOLD.",name))
   
-  R$SCAN.splom.rowInd <- plot.sploms(CLS=R$SCAN.CLS, D=R$SCAN.D, name=paste0("SCAN.GOLD.",name))
-  R$GEO.splom.rowInd <- plot.sploms(CLS=R$GEO.CLS, D=R$GEO.D, name=paste0("GEO.GOLD.",name))
+  R$SCAN.splom <- plot.sploms(CLS=R$SCAN.CLS, D=R$SCAN.D, name=paste0("SCAN.GOLD.",name))
+  R$GEO.splom <- plot.sploms(CLS=R$GEO.CLS, D=R$GEO.D, name=paste0("GEO.GOLD.",name))
+
+  # Scatterplot matrix of IEEE order
+  o.row <- order.dendrogram(R$SCAN.splom$default.order.R$Rhclust)
+  M <- exprs(SCAN[gold.i,])
+  pdf(paste0("pairs.dtfgsplom.",name,".pdf"), width=20, height=20)
+  pairs(t(M[o.row,]), main=paste(name,"Default GSPLOM order"))
+  dev.off()
   R
 }
 ## ==================================================
-
-
 
 # 4mut
 all.4mut <- analyze.and.plot(GEO=GSE2180.GEO, SCAN=GSE2180.SCAN, name="4mut")
@@ -226,7 +255,7 @@ all.4mut <- analyze.and.plot(GEO=GSE2180.GEO, SCAN=GSE2180.SCAN, name="4mut")
 qq <- GSE2180.GEO$genotype %in% c('N2','ms')
 wt.ms.2mut <- analyze.and.plot(GEO=GSE2180.GEO[,qq], SCAN=GSE2180.SCAN[,qq], name="WT+ms")
 
-# EXAMPLE RASTER OUTPUT
-CLS <- wt.ms.2mut$SCAN.CLS$CLS
-DCOR <- wt.ms.2mut$SCAN.D$DCOR
-
+# Export WT+ms for future use
+## wt.ms.qq <- qq
+## wt.ms.2mut$M <- GSE2180.SCAN[gold.i,qq]
+#save(wt.ms.2mut, wt.ms.qq, GSE2180.SCAN, gold.i, GSE2180.SCAN.b, file="~/Desktop/mar21.celegans.gold.dcor.cls.wtms.RData")
