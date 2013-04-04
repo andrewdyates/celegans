@@ -101,13 +101,41 @@ plot.dep.matrix <- function(R, name) {
   heatmap.2(R$DCOV[R$rowInd,R$rowInd], main=paste(name,"dCOV"), symm=T, col=heatmap_cols, Rowv=NULL, dendrogram='none', trace='none', cexRow=0.6, cexCol=0.6)
   heatmap.2(R$DCOR[R$rowInd,R$rowInd] - abs(R$PCC[R$rowInd,R$rowInd]), main=paste(name,"dCOR - |PCC|"), symm=T, col=heatmap_cols, Rowv=NULL, dendrogram='none', trace='none', cexRow=0.6, cexCol=0.6)
   heatmap.2(R$DCOV[R$rowInd,R$rowInd] - abs(R$COV[R$rowInd,R$rowInd]), main=paste(name,"dCOV - |COV|"), symm=T, col=heatmap_cols, Rowv=NULL, dendrogram='none', trace='none', cexRow=0.6, cexCol=0.6)
+  plot(R$Rhclust, main="Row Hcluster dCOR default clustering using dist+PCC")
+
+  # Cluster on |PCC|, |dCOR|, add dendrograms.
+  Z <- heatmap.2(R$DCOR, hclustfun=function(x) hclust(x,method="average"), symm=T, col=heatmap_cols, breaks=heatmap_breaks, trace='none', main="dCor average linkage euclidean distance")
+  heatmap.2(R$PCC, hclustfun=function(x) hclust(x,method="average"), symm=T, col=heatmap_cols, trace='none', main="PCC average linkage euclidean distance")
+  heatmap.2(R$SP, hclustfun=function(x) hclust(x,method="average"), symm=T, col=heatmap_cols, trace='none', main="SPEARMAN average linkage euclidean distance")
+  heatmap.2(abs(R$PCC), hclustfun=function(x) hclust(x,method="average"), symm=T, col=heatmap_cols, breaks=heatmap_breaks, trace='none', main="abs(PCC) average linkage euclidean distance")
+  heatmap.2(abs(R$SP), hclustfun=function(x) hclust(x,method="average"), symm=T, col=heatmap_cols, breaks=heatmap_breaks, trace='none', main="abs(SPEARMAN) average linkage euclidean distance")
+  heatmap.2(matrix(0:9/9, nrow=5, ncol=2), col=heatmap_cols, breaks=heatmap_breaks, trace='none', main="force color scale")
+  
+  # dCor - |PCC|
+  DIFF <- R$DCOR-abs(R$PCC)
+  print(paste(name, range(DIFF)))
+  x <- Z$rowInd
+  heatmap.3(DIFF[x,x], reorder=F, MIN=-0.10, MAX=0.4, main="dCOR-|PCC| dCOR cluster order")
+  heatmap.3(DIFF[x,x], reorder=F, MIN=-0.05, MAX=0.3, main="dCOR-|PCC| dCOR cluster order, color scale 2")
+  heatmap.3(DIFF[x,x], reorder=F, MIN=min(DIFF), MAX=max(DIFF), main="dCOR-|PCC|, dCOR cluster order")
+  DIFF.SP <- R$DCOR-abs(R$SP)
+  print(paste(name, range(DIFF.SP), "SP"))
+  heatmap.3(DIFF.SP[x,x], reorder=F, MIN=min(DIFF.SP), MAX=max(DIFF.SP), main="dCOR-|SP|, dCOR cluster order")
   dev.off()
+
+  DIFF <- R$DCOR - abs(R$PCC)
+  DIFF.SP <- R$DCOR - abs(R$SP)
   pdf(paste0("dependency.hists.",name,".pdf"))
   hist(R$PCC, main=paste(name, "PCC"))
+  hist(R$SP, main=paste(name, "SPEARMAN"))
+  hist(R$PCC[upper.tri(R$PCC)], main=paste(name, "PCC"))
   hist(R$DCOR, main=paste(name, "dCOR"))
+  hist(R$DCOR[upper.tri(R$DCOR)], main=paste(name, "dCOR upper triangle"))
   hist(R$COV, main=paste(name, "COV"))
   hist(R$DCOV, main=paste(name, "dCOV"))
-  hist(R$DCOR - abs(R$PCC), main=paste(name, "dCOR - |PCC|"))
+  hist(DIFF, main=paste(name, "dCOR - |PCC|"))
+  hist(DIFF[upper.tri(DIFF)], main=paste(name, "dCOR - |PCC| upper triangle"))
+  hist(DIFF.SP[upper.tri(DIFF.SP)], main=paste(name, "dCOR - |SP| upper triangle"))
   hist(R$DCOV - abs(R$COV), main=paste(name, "dCOV - |COV|"))
   dev.off()
 }
@@ -124,6 +152,7 @@ calc.deps <- function(M, labels) {
   R$DCOR <- label.dep.m(all.pairs.dcor(M), labels)
   R$DCOV <- label.dep.m(all.pairs.dcov(M), labels)
   R$PCC <- label.dep.m(cor(t(M)), labels)
+  R$SP  <- label.dep.m(cor(t(M), method="spearman"), labels)
   R$COV <- label.dep.m(cov(t(M)), labels)
 
   # dcor hclust order
@@ -255,7 +284,60 @@ all.4mut <- analyze.and.plot(GEO=GSE2180.GEO, SCAN=GSE2180.SCAN, name="4mut")
 qq <- GSE2180.GEO$genotype %in% c('N2','ms')
 wt.ms.2mut <- analyze.and.plot(GEO=GSE2180.GEO[,qq], SCAN=GSE2180.SCAN[,qq], name="WT+ms")
 
-# Export WT+ms for future use
-## wt.ms.qq <- qq
-## wt.ms.2mut$M <- GSE2180.SCAN[gold.i,qq]
-#save(wt.ms.2mut, wt.ms.qq, GSE2180.SCAN, gold.i, GSE2180.SCAN.b, file="~/Desktop/mar21.celegans.gold.dcor.cls.wtms.RData")
+## ----------------------------------------
+## HACK SCRIPT FOR PUBLICATION FIGURE GENERATION
+
+R <- wt.ms.2mut$SCAN.D
+DIFF <- R$DCOR - abs(R$PCC)
+DIFF.SP <- R$DCOR - abs(R$SP)
+name<-"wt.ms.2mut.scan"
+pdf("wt.ms.2mut.scan.ieee.hists.pdf", width=6, height=6)
+hist(R$DCOR[upper.tri(DIFF)], main=paste(name, "dCOR upper triangle"), breaks=seq(0,1,0.05))
+hist(DIFF[upper.tri(DIFF)], main=paste(name, "dCOR - |PCC| upper triangle"), breaks=seq(-.2,.75,0.05))
+hist(DIFF.SP[upper.tri(DIFF.SP)], main=paste(name, "dCOR - |SP| upper triangle"), breaks=seq(-.2,.75,0.05))
+hist(R$DCOR[upper.tri(DIFF)], main=paste(name, "dCOR upper triangle"), breaks=seq(0,1,0.05), ylim=c(0,50))
+hist(DIFF[upper.tri(DIFF)], main=paste(name, "dCOR - |PCC| upper triangle"), breaks=seq(-.2,.75,0.05), ylim=c(0,50))
+hist(DIFF.SP[upper.tri(DIFF.SP)], main=paste(name, "dCOR - |SP| upper triangle"), breaks=seq(-.2,.75,0.05), ylim=c(0,50))
+
+hist(R$PCC[upper.tri(R$PCC)], main=paste(name, "PCC upper triangle"), breaks=seq(-0.3,1,0.05), ylim=c(0,50))
+hist(abs(R$PCC[upper.tri(R$PCC)]), main=paste(name, "abs(PCC) upper triangle"), breaks=seq(-0.3,1,0.05), ylim=c(0,50))
+hist(R$SP[upper.tri(R$SP)], main=paste(name, "SP upper triangle"), breaks=seq(-0.3,1,0.05), ylim=c(0,50))
+hist(abs(R$SP[upper.tri(R$SP)]), main=paste(name, "abs(SP) upper triangle"), breaks=seq(-0.3,1,0.05), ylim=c(0,50))
+hist(R$DCOR[upper.tri(R$DCOR)], main=paste(name, "DCOR upper triangle"), breaks=seq(-0.3,1,0.05), ylim=c(0,50))
+
+dev.off()
+
+## dCOR, |PCC|, |SP| heatmaps in GSPLOM order
+qq <- order.dendrogram(wt.ms.2mut$SCAN.splom$default.order.R$Rhclust)
+R <- wt.ms.2mut$SCAN.D
+DIFF.pcc <- R$DCOR - abs(R$PCC)
+DIFF.sp  <- R$DCOR - abs(R$SP)
+pdf("ieee_dependency_gsplom_order.pdf", width=10, height=10)
+heatmap.3(R$DCOR[qq,qq], reorder=F, MIN=0, MAX=1, main="dCOR final GSPLOM order")
+heatmap.3(DIFF.pcc[qq,qq], reorder=F, MIN=min(DIFF.pcc), MAX=max(DIFF.pcc), main="dCOR-|PCC| final GSPLOM order")
+heatmap.3(DIFF.sp[qq,qq], reorder=F, MIN=min(DIFF.sp), MAX=max(DIFF.sp), main="dCOR-|SP| final GSPLOM order")
+dev.off()
+
+## Bool glyphs only
+pdf("ieee.cls.gsplom.no.dcorscaling.pdf", width=12, height=12)
+# Cls distance only
+par(mar=c(0,0,0,0))
+Q <- splom.cls(wt.ms.2mut$SCAN.CLS$CLS, asGlyphs=T)
+# GSPLOM order
+par(mar=c(0,0,0,0))
+Q2 <- splom.cls(wt.ms.2mut$SCAN.CLS$CLS[qq,qq], asGlyphs=T, reorder=F)
+dev.off()
+# WARNING: dendrograms do not include row/column names
+Q.names <- rownames(wt.ms.2mut$SCAN.CLS$CLS)[order.dendrogram(Q$Rhclust)]
+
+
+pdf("ieee.cls.distance.dendrograms.pdf", width=10, height=6)
+plot(Q$Rhclust)
+plot(Q$Chclust)
+dev.off()
+
+write.table(as.matrix(R$DCOR), file="gold.celegans.scan.dcor.tab", sep="\t")
+
+pdf("ieee.splom.summary.pdf", width=8, height=6)
+summary.plots(wt.ms.2mut$SCAN.CLS$CLS,wt.ms.2mut$SCAN.D$DCOR, sym=T)
+dev.off()
