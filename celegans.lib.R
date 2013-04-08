@@ -3,6 +3,7 @@ library(lumi) # for nice figures, plus Biobase
 library(Biobase)
 library(energy)
 library("RColorBrewer")
+### WARNING: THESE NEED TO BE RELATIVE TO R PATH!!
 source("~/Dropbox/biostat/git_repos/dependency_glyph_splom/lib.R")
 source("~/Dropbox/biostat/git_repos/boolean_implication_fit/bool.R")
 source("~/Dropbox/biostat/git_repos/boolean_implication_fit/step.up.R")

@@ -12,3 +12,4 @@ row.qq <- max.expr>=0.5
 M <- exprs(GSE2180.SCAN[row.qq, col.qq])
 dim(M) # 8995   61
 write.table(M, file="~/c.elegans/GSE2180.SCAN.N2.ms.max_0.5.tab", sep="\t", row.names=T, col.names=T, quote=F)
+save(M, file="~/c.elegans/GSE2180.SCAN.N2.ms.max_0.5.RData")
