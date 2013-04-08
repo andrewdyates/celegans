@@ -36,6 +36,7 @@ dev.off()
 expr.probes.qq <- upc.num.over.5>=4
 
 trans.factors <- unique(as.vector(unlist(read.table("celegans.transcription.factors.txt", stringsAsFactors=F))))
+# 606 +3 = 609 transcription factor names
 trans.row.nums <- sapply(trans.factors, function(s) grep(paste0("(",s," |",s,"$)"), featureData(E)$Gene.Symbol))
 
 # Assign gene label to expression matrix. Warning: this is inefficient.
@@ -58,14 +59,31 @@ for (name in names(trans.row.nums)) {
 }
 
 # of 22,625 probes, 792 are associated with at least one transcription factor
-sum(!is.na(featureData(E)$transfact.gene))
-# [1] 792
+sum(!is.na(featureData(E)$transfact.label))
+# [1] 792+3 = 795
 length(unique(featureData(E)$transfact.gene))
-# [1] accounting for 574 unique genes from 606 total factors
+# [1] 574+3=577: accounting for 577 unique genes from 609 total factors
+trans.probes.qq <- !is.na(featureData(E)$transfact.label)
+sum(expr.probes.qq)
+#[1] 7063
+sum(trans.probes.qq)
+#[1] 792+3 = 795
+expr.trans.probes.qq <- expr.probes.qq & trans.probes.qq
+sum(expr.trans.probes.qq)
+# [1] 285 of 795: 35.8%
 
+E.expr <- E[expr.probes.qq,]
+E.expr.trans <- E[expr.trans.probes.qq,]
+E.gold <- E[gold.i,]
 
+## Export all expressed probes, all expressed transcription factors
+featureData(E[gold.i,])$gold[!expr.trans.probes.qq[gold.i]]
+# Prior to adding mab-21, cwn-1 ,and scrt-1 to transcription factor list...
+#[1] "mab-21 188239_s_at" "cwn-1 188486_s_at"  "scrt-1 192307_at"  
+#[4] "nhr-25 193001_s_at" (too low expression)
+# Add back mab-21, cwn-1, scrt-1...
+# Now get...
+# [1] "nhr-25 193001_s_at" (ok, low expression confidence)
+# ----------------------------------------
 
-
-save(expr.probes.qq, M, file="probe.filtered.celegans.RData")
-
-
+save(E.expr, E.expr.trans, E.gold, file="celegans.apr8.expr.RData")
