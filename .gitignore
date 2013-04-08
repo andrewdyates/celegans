@@ -1,7 +1,11 @@
 # History files
+.RData
+.Rdata
 .Rhistory
 *.pyc
 *~
+*.csv
+*.tab
 \#*
 .\#*
 *.pdf

@@ -318,6 +318,7 @@ heatmap.3(DIFF.pcc[qq,qq], reorder=F, MIN=min(DIFF.pcc), MAX=max(DIFF.pcc), main
 heatmap.3(DIFF.sp[qq,qq], reorder=F, MIN=min(DIFF.sp), MAX=max(DIFF.sp), main="dCOR-|SP| final GSPLOM order")
 dev.off()
 
+
 ## Bool glyphs only
 pdf("ieee.cls.gsplom.no.dcorscaling.pdf", width=12, height=12)
 # Cls distance only
@@ -341,3 +342,25 @@ write.table(as.matrix(R$DCOR), file="gold.celegans.scan.dcor.tab", sep="\t")
 pdf("ieee.splom.summary.pdf", width=8, height=6)
 summary.plots(wt.ms.2mut$SCAN.CLS$CLS,wt.ms.2mut$SCAN.D$DCOR, sym=T)
 dev.off()
+
+## Export gold standard network as tab-delimited files.
+
+qq <- order.dendrogram(wt.ms.2mut$SCAN.splom$default.order.R$Rhclust)
+CLS <- wt.ms.2mut$SCAN.CLS$CLS[qq,qq]
+DCOR <- wt.ms.2mut$SCAN.D$DCOR[qq,qq]
+PCC <- wt.ms.2mut$SCAN.D$PCC[qq,qq]
+qq.c <- GSE2180.GEO$genotype %in% c('N2','ms')
+
+M <- exprs(GSE2180.SCAN[gold.i,qq.c])
+M <- M[qq,] # in gold standard network order
+time <- t(as.matrix(GSE2180.SCAN$time[qq.c]))
+MM <- rbind(time, M)
+rownames(MM)[1] <- "time(min)"
+rownames(MM)[2:dim(MM)[1]] <- rownames(CLS)
+
+
+# Export tables in excel friendly format
+write.table(CLS, sep=",", file="gold.celegan.gse2180.cls.csv", col.names=NA, quote=F)
+write.table(DCOR, sep=",", file="gold.celegan.gse2180.dcor.csv", col.names=NA, quote=F)
+write.table(PCC, sep=",", file="gold.celegan.gse2180.pcc.csv", col.names=NA, quote=F)
+write.table(MM, sep=",", file="gold.celegan.gse2180.M.csv", col.names=NA, quote=F)
