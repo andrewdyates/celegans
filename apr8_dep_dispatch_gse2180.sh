@@ -8,6 +8,7 @@ mkdir -p $DST
 cd $DST
 
 python $HOME/pymod/dependency_matrix/permutation_test_dispatch_script.py n_permutes=3 fname=$SRC computers=[\"PCC\",\"Dcor\"] outdir=$DST n_nodes=1 n_ppn=12 hours=8
+python $HOME/pymod/dependency_matrix/dispatch_script.py fname=$SRC computers=[\"PCC\",\"Dcor\"] outdir=$DST n_nodes=1 n_ppn=12 hours=1
 
 # ------------------------------
 SRC=/nfs/01/osu6683/c.elegans/celegans.apr8.expr.trans.tab
