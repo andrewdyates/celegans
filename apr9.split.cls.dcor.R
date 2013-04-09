@@ -48,4 +48,4 @@ EXPR.DCOR <- DCOR[qq.expr.D, qq.expr.D]
 EXPR.CLS <- CLS[qq.expr.C, qq.expr.C]
 
 # saved workspace. open to restore...
-save(
+save(GOLD.DCOR, GOLD.CLS, TRANS.DCOR, TRANS.CLS, EXPR.DCOR, EXPR.CLS, file="../apr9.dcor.cls.RData")
