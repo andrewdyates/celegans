@@ -30,22 +30,36 @@ all(1:dim(PCC)[1] == match(rownames(PCC), rownames(DCOR))) # OK
 qq.gold.D <- match(featureNames(featureData(E.gold)), rownames(PCC))
 qq.gold.C <- match(featureNames(featureData(E.gold)), rownames(CLS))
 # handle missing probe due to insufficient expression in gold set
-qq.gold.D <- qq.gold.D[!is.na(qq.gold.D)]
-qq.gold.C <- qq.gold.C[!is.na(qq.gold.D)]
+exclude <- is.na(qq.gold.D)
+qq.gold.D <- qq.gold.D[!exclude]
+qq.gold.C <- qq.gold.C[!exclude]
 GOLD.DCOR <- DCOR[qq.gold.D, qq.gold.D]
 GOLD.CLS <- CLS[qq.gold.C, qq.gold.C]
+rownames(GOLD.DCOR) <- featureData(E.gold[!exclude])$transfact.label
+colnames(GOLD.DCOR) <- featureData(E.gold[!exclude])$transfact.label
+rownames(GOLD.CLS) <- featureData(E.gold[!exclude])$transfact.label
+colnames(GOLD.CLS) <- featureData(E.gold[!exclude])$transfact.label
 
-#E.expr.trans
+# E.expr.trans (Expressed transcription factors)
 qq.trans.D <- match(featureNames(featureData(E.expr.trans)), rownames(PCC))
 qq.trans.C <- match(featureNames(featureData(E.expr.trans)), rownames(CLS))
 TRANS.DCOR <- DCOR[qq.trans.D, qq.trans.D]
 TRANS.CLS <- CLS[qq.trans.C, qq.trans.C]
+rownames(TRANS.DCOR) <- featureData(E.expr.trans)$transfact.label
+colnames(TRANS.DCOR) <- featureData(E.expr.trans)$transfact.label
+rownames(TRANS.CLS) <- featureData(E.expr.trans)$transfact.label
+colnames(TRANS.CLS) <- featureData(E.expr.trans)$transfact.label
 
-#E.expr
+# E.expr (All expressed probes)
 qq.expr.D <- match(featureNames(featureData(E.expr)), rownames(PCC))
 qq.expr.C <- match(featureNames(featureData(E.expr)), rownames(CLS))
 EXPR.DCOR <- DCOR[qq.expr.D, qq.expr.D]
 EXPR.CLS <- CLS[qq.expr.C, qq.expr.C]
+rownames(EXPR.DCOR) <- featureData(E.expr)$transfact.label
+colnames(EXPR.DCOR) <- featureData(E.expr)$transfact.label
+rownames(EXPR.CLS) <- featureData(E.expr)$transfact.label
+colnames(EXPR.CLS) <- featureData(E.expr)$transfact.label
+
 
 # saved workspace. open to restore...
 save(GOLD.DCOR, GOLD.CLS, TRANS.DCOR, TRANS.CLS, EXPR.DCOR, EXPR.CLS, file="../apr9.dcor.cls.RData")

@@ -1,6 +1,6 @@
 # History files
-.RData
-.Rdata
+*.RData
+*.Rdata
 .Rhistory
 *.pyc
 *~
