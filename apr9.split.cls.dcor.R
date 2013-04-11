@@ -1,3 +1,5 @@
+# Load all-pairs dCOR, PCC, and boolean class, split into subnetworks
+# ----------------------------------------
 library("Biobase")
 load("../mar20.gse2180.steps.cls.RData")
 load("../celegans.apr8.expr.RData")
@@ -34,9 +36,12 @@ exclude <- is.na(qq.gold.D)
 qq.gold.D <- qq.gold.D[!exclude]
 qq.gold.C <- qq.gold.C[!exclude]
 GOLD.DCOR <- DCOR[qq.gold.D, qq.gold.D]
+GOLD.PCC <- PCC[qq.gold.D, qq.gold.D]
 GOLD.CLS <- CLS[qq.gold.C, qq.gold.C]
 rownames(GOLD.DCOR) <- featureData(E.gold[!exclude])$transfact.label
 colnames(GOLD.DCOR) <- featureData(E.gold[!exclude])$transfact.label
+rownames(GOLD.PCC) <- featureData(E.gold[!exclude])$transfact.label
+colnames(GOLD.PCC) <- featureData(E.gold[!exclude])$transfact.label
 rownames(GOLD.CLS) <- featureData(E.gold[!exclude])$transfact.label
 colnames(GOLD.CLS) <- featureData(E.gold[!exclude])$transfact.label
 
@@ -44,9 +49,12 @@ colnames(GOLD.CLS) <- featureData(E.gold[!exclude])$transfact.label
 qq.trans.D <- match(featureNames(featureData(E.expr.trans)), rownames(PCC))
 qq.trans.C <- match(featureNames(featureData(E.expr.trans)), rownames(CLS))
 TRANS.DCOR <- DCOR[qq.trans.D, qq.trans.D]
+TRANS.PCC <- PCC[qq.trans.D, qq.trans.D]
 TRANS.CLS <- CLS[qq.trans.C, qq.trans.C]
 rownames(TRANS.DCOR) <- featureData(E.expr.trans)$transfact.label
 colnames(TRANS.DCOR) <- featureData(E.expr.trans)$transfact.label
+rownames(TRANS.PCC) <- featureData(E.expr.trans)$transfact.label
+colnames(TRANS.PCC) <- featureData(E.expr.trans)$transfact.label
 rownames(TRANS.CLS) <- featureData(E.expr.trans)$transfact.label
 colnames(TRANS.CLS) <- featureData(E.expr.trans)$transfact.label
 
@@ -54,12 +62,15 @@ colnames(TRANS.CLS) <- featureData(E.expr.trans)$transfact.label
 qq.expr.D <- match(featureNames(featureData(E.expr)), rownames(PCC))
 qq.expr.C <- match(featureNames(featureData(E.expr)), rownames(CLS))
 EXPR.DCOR <- DCOR[qq.expr.D, qq.expr.D]
+EXPR.PCC <- PCC[qq.expr.D, qq.expr.D]
 EXPR.CLS <- CLS[qq.expr.C, qq.expr.C]
 rownames(EXPR.DCOR) <- featureData(E.expr)$transfact.label
 colnames(EXPR.DCOR) <- featureData(E.expr)$transfact.label
+rownames(EXPR.PCC) <- featureData(E.expr)$transfact.label
+colnames(EXPR.PCC) <- featureData(E.expr)$transfact.label
 rownames(EXPR.CLS) <- featureData(E.expr)$transfact.label
 colnames(EXPR.CLS) <- featureData(E.expr)$transfact.label
 
 
 # saved workspace. open to restore...
-save(GOLD.DCOR, GOLD.CLS, TRANS.DCOR, TRANS.CLS, EXPR.DCOR, EXPR.CLS, file="../apr9.dcor.cls.RData")
+save(GOLD.DCOR, GOLD.PCC, GOLD.CLS, TRANS.DCOR, TRANS.PCC, TRANS.CLS, EXPR.DCOR, EXPR.PCC, EXPR.CLS, file="../apr9.dcor.cls.RData")
