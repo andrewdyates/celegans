@@ -1,8 +1,9 @@
-#PBS -N GSE2180_norm
+#PBS -N 2180_scan
 #PBS -l nodes=1:ppn=12
 #PBS -j oe
+#PBS -m be
 #PBS -S /bin/bash
-#PBS -l walltime=6:00:00
+#PBS -l walltime=5:00:00
 
 #tdate=$(date +%%T)
 
