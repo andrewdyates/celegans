@@ -316,7 +316,7 @@ pdf("ieee_dependency_gsplom_order.pdf", width=10, height=10)
 heatmap.3(R$DCOR[qq,qq], reorder=F, MIN=0, MAX=1, main="dCOR final GSPLOM order")
 heatmap.3(DIFF.pcc[qq,qq], reorder=F, MIN=min(DIFF.pcc), MAX=max(DIFF.pcc), main="dCOR-|PCC| final GSPLOM order")
 heatmap.3(DIFF.sp[qq,qq], reorder=F, MIN=min(DIFF.sp), MAX=max(DIFF.sp), main="dCOR-|SP| final GSPLOM order")
-dev.off()
+bdev.off()
 
 
 ## Bool glyphs only
@@ -364,3 +364,5 @@ write.table(CLS, sep=",", file="gold.celegan.gse2180.cls.csv", col.names=NA, quo
 write.table(DCOR, sep=",", file="gold.celegan.gse2180.dcor.csv", col.names=NA, quote=F)
 write.table(PCC, sep=",", file="gold.celegan.gse2180.pcc.csv", col.names=NA, quote=F)
 write.table(MM, sep=",", file="gold.celegan.gse2180.M.csv", col.names=NA, quote=F)
+gold.gsplom.dendro <- wt.ms.2mut$SCAN.splom$default.order.R$Rhclust
+save(gold.gsplom.dendro, file="wt.ms.2mut.SCAN.gsplom.Rhclust.RData")
