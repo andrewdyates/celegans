@@ -32,6 +32,7 @@ D.expr <- get.dep.M(Eg.expr, CLS, DCOR, PCC)
 D.expr.trans <- get.dep.M(Eg.expr.trans, CLS, DCOR, PCC)
 D.expr.gold <- get.dep.M(Eg.expr.gold, CLS, DCOR, PCC)
 
+## TODO!!!!
 add.on.off.necessary {
   # convert each gene to on and off
   # count overlaps
