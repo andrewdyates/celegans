@@ -9,7 +9,6 @@ PCC <- as.matrix(M)
 # There is a mistake in dCor matrix; namely, it is square root of the actual value. Fix that.
 DCOR <- DCOR ^ 2
 
-
 get.dep.M <- function(Eg, CLS, DCOR, PCC) {
   R <- list()
   R$rownames <- rownames(exprs(Eg))
@@ -32,5 +31,11 @@ get.dep.M <- function(Eg, CLS, DCOR, PCC) {
 D.expr <- get.dep.M(Eg.expr, CLS, DCOR, PCC)
 D.expr.trans <- get.dep.M(Eg.expr.trans, CLS, DCOR, PCC)
 D.expr.gold <- get.dep.M(Eg.expr.gold, CLS, DCOR, PCC)
+
+add.on.off.necessary {
+  # convert each gene to on and off
+  # count overlaps
+}
+
 
 save(D.expr, D.expr.gold, D.expr.trans, file="../apr16.genelevel.depM.RData")

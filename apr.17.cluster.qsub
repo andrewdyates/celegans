@@ -1,0 +1,15 @@
+#PBS -N cluster
+#PBS -l nodes=1:ppn=12
+#PBS -j oe
+#PBS -m be
+#PBS -S /bin/bash
+#PBS -l walltime=99:00:00
+
+#tdate=$(date +%%T)
+
+set -x
+cd /nfs/01/osu6683/
+source .bash_profile
+
+cd /fs/lustre/share/yates.c.elegans.sp13
+/usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/apr.17.plot.genelevel.R /fs/lustre/share/yates.c.elegans.sp13/source_code_github/apr.17.plot.genelevel.Rout
