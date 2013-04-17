@@ -10,28 +10,27 @@ PCC <- as.matrix(M)
 DCOR <- DCOR ^ 2
 
 
-D.expr <- list()
-qq <- match(rownames(exprs(Eg.expr)), rownames(CLS))
-D.expr$CLS <- CLS[qq,qq]
-qq <- match(rownames(exprs(Eg.expr)), rownames(DCOR))
-D.expr$DCOR <- DCOR[qq,qq]
-qq <- match(rownames(exprs(Eg.expr)), rownames(PCC))
-D.expr$PCC <- PCC[qq,qq]
+get.dep.M <- function(Eg, CLS, DCOR, PCC) {
+  R <- list()
+  R$rownames <- rownames(exprs(Eg))
+  R$syms <- featureData(Eg)$sym
+  qq <- match(R$rownames, rownames(CLS))
+  R$CLS <- CLS[qq,qq]
+  rownames(R$CLS) <- R$syms
+  colnames(R$CLS) <- R$syms
+  qq <- match(R$rownames, rownames(DCOR))
+  R$DCOR <- DCOR[qq,qq]
+  rownames(R$DCOR) <- R$syms
+  colnames(R$DCOR) <- R$syms
+  qq <- match(R$rownames, rownames(PCC))
+  R$PCC <- PCC[qq,qq]
+  rownames(R$PCC) <- R$syms
+  colnames(R$PCC) <- R$syms
+  R
+}
 
-D.expr.gold <- list()
-qq <- match(rownames(exprs(Eg.expr.gold)), rownames(CLS))
-D.expr.gold$CLS <- CLS[qq,qq]
-qq <- match(rownames(exprs(Eg.expr.gold)), rownames(DCOR))
-D.expr.gold$DCOR <- DCOR[qq,qq]
-qq <- match(rownames(exprs(Eg.expr.gold)), rownames(PCC))
-D.expr.gold$PCC <- PCC[qq,qq]
-
-D.expr.trans <- list()
-qq <- match(rownames(exprs(Eg.expr.trans)), rownames(CLS))
-D.expr.trans$CLS <- CLS[qq,qq]
-qq <- match(rownames(exprs(Eg.expr.trans)), rownames(DCOR))
-D.expr.trans$DCOR <- DCOR[qq,qq]
-qq <- match(rownames(exprs(Eg.expr.trans)), rownames(PCC))
-D.expr.trans$PCC <- PCC[qq,qq]
+D.expr <- get.dep.M(Eg.expr, CLS, DCOR, PCC)
+D.expr.trans <- get.dep.M(Eg.expr.trans, CLS, DCOR, PCC)
+D.expr.gold <- get.dep.M(Eg.expr.gold, CLS, DCOR, PCC)
 
 save(D.expr, D.expr.gold, D.expr.trans, file="../apr16.genelevel.depM.RData")
