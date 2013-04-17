@@ -22,6 +22,8 @@ def main(fname):
     except:
       print >> sys.stderr, line
       sys.exit(1)
+    if "_x_" in probe:
+      continue
     gene = ";".join([g for g in genes if not g.startswith("WBGene")])
     if len(gene) == 0:
       continue
