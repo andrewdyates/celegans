@@ -9,10 +9,11 @@ source("/nfs/01/osu6683/pymod/dependency_glyph_splom/lib.R")
 pdf("/nfs/01/osu6683/c.elegans/gold.gsplom.genes.apr17.pdf", width=15, height=15)
 GOLD.R <- splom(D.expr.gold$CLS, D.expr.gold$DCOR, asGlyphs=T, useRaster=F, draw.labs=T, reorder=T, MAX=1, MIN=0.2)
 dev.off()
-GOLD.R$qq <- order.dendrogram(TRANS.R$Rhclust)
+GOLD.R$qq <- order.dendrogram(GOLD.R$Rhclust)
 pdf("/nfs/01/osu6683/c.elegans/gold.dendro.genes.apr17.pdf", width=15, height=8)
 plot(GOLD.R$Rhclust)
 dev.off()
+
 
 # Transcription factors
 # ----------------------------------------

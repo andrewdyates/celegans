@@ -11,5 +11,5 @@ set -x
 cd /nfs/01/osu6683/
 source .bash_profile
 
-cd /fs/lustre/share/yates.c.elegans.sp13
+cd /fs/lustre/share/yates.c.elegans.sp13/source_code_github/
 /usr/bin/time R CMD BATCH /fs/lustre/share/yates.c.elegans.sp13/source_code_github/apr.17.plot.genelevel.R /fs/lustre/share/yates.c.elegans.sp13/source_code_github/apr.17.plot.genelevel.Rout
