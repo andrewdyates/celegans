@@ -113,7 +113,7 @@ get.mean.dcor <- function(DCOR, sym=F) {
   }
   u<-mean(D)
   if(is.na(u))
-    u <- 1
+    u <- DCOR # mean is value itself
   u
 }
 
@@ -541,3 +541,92 @@ which(ZYY$edge.wavg >= 0.9)[1] # 17
 
 ## ************************************************************
 ## We have successfully compressed the network to 18 clusters. What is in each of these clusters?
+
+# collapses
+QQ <- list()
+QQ[[1]] <- R       # k70: 1
+QQ[[2]] <- RR      # k44: 2
+QQ[[3]] <- RRR     # k35: 3
+QQ[[4]] <- RRRR    # k31: 4
+QQ[[5]] <- RRRRR   # k28: 5
+QQ[[6]] <- RRRRRR  # k26: 6
+QQ[[7]] <- RRRRRRR # k22: 7
+QQ[[8]] <- RY      # k19: 8
+QQ[[9]] <- RYY     # k18: 9
+
+# how to get member list for last iteration clusters?
+QQ[[1]]$members
+
+
+lvl <- 2
+Cman <- list()
+for (c in names(QQ[[lvl]]$members)) {
+  z <- QQ[[lvl]]$members[[c]]
+  Z <- sapply(z, function(zz) QQ[[lvl-1]]$members[[zz]])
+  Cman[[c]] <- Z
+}
+
+## get members of cluster z at lvl
+get.members.recurse <- function(QQ, lvl, clust) {
+  if (lvl==1) {
+    mems <- QQ[[1]]$members[[clust]]
+  } else {
+    # for each member, get its members
+    mems <- list()
+    for (m in QQ[[lvl]]$members[[clust]]) {
+      mems[[m]] <- get.members.recurse(QQ,lvl-1,m)
+    }
+  }
+  mems
+}
+
+lvl <- 2
+C2 <- list()
+for (c in names(QQ[[lvl]]$members)) {
+  C2[[c]] <- get.members.recurse(QQ,lvl,c)
+}
+
+
+lvl <- 9
+C9 <- list()
+for (c in names(QQ[[lvl]]$members)) {
+  C9[[c]] <- get.members.recurse(QQ,lvl,c)
+}
+
+save(C9, file="../collapsed.cluster.listings.RData")
+## Collapse nested lists using 'unlist'
+
+length(C9) # 18
+## how many genes in each cluster?
+sizes <- sapply(C9, function(c) length(unlist(c)))
+ ## 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 
+ ## 5 22 30  7 48 34 15  4  3 10  4  1  2  1  2  1  1  1 
+sum(sapply(C9, function(c) length(unlist(c))))
+## [1] 191
+
+pdf("../all.trans.k18.cluster.member.counts.pdf", width=10, height=10)
+barplot(sort(sizes), main="Compressed Cluster Sizes", ylim=c(0,max(sizes)+2), xlab="Cluster Enumeration", ylab="Number of Genes in Cluster")
+dev.off()
+
+# plotting algorithm:
+# if 5 genes or less, plot directly
+# if more than 6 genes, attempt to compress and repeat algorithm
+
+## PLAN:
+## 1. export C9 compressed graph (CLS, DCOR), plus gene names and cluster sizes
+write.table(QQ[[9]]$CLS, file="../all.trans.k18.C9.CLS.apr28.tab", sep="\t", col.names=NA, row.names=T)
+# WARNING: cluster dCOR values are wrong and artifically high due to "1" insertion in previous
+# implementation of algorithm!
+write.table(QQ[[9]]$DCOR, file="../all.trans.k18.C9.DCOR.apr28.tab", sep="\t", col.names=NA, row.names=T)
+## listing of "tight" clusters
+write.table(sapply(QQ[[1]]$members, function(s) paste(s, collapse=" ")), file="../all.trans.k70.C1.memberlist.csv", sep=",", col.names=NA, row.names=T)
+## listing of "loose", most compressed clusters
+write.table(sapply(C9, function(s) paste(unlist(s), collapse=" ")), file="../all.trans.k18.C9.memberlist.csv", sep=",", col.names=NA, row.names=T)
+
+## 2. export C9 cluster sizes
+write.table(sapply(C9, function(c) length(unlist(c))), file="../all.trans.k18.C9.cluster.sizes.csv", sep=",", row.names=T, col.names=NA)
+
+## 3. plot clusters with sizing using python
+## ---
+## plot subclusters...
+
