@@ -11,6 +11,7 @@ source("~/Dropbox/biostat/git_repos/dependency_glyph_splom/lib.R")
 # 0: no class; 1: and; 2: rn4c; 3: cn4r; 4: xor; 5: mix
 # err: number of error bits
 weak.couple <- function(row,col,err=1) {
+  x <- row; y <- col
   mask <- x|y
   n <- sum(mask)
   if(n <= err)
@@ -71,11 +72,11 @@ all.pairs.weak <- function(M, th=0.2) {
   D
 }
 
-D.expr.gold$WEAK <- all.pairs.weak(exprs(Eg.expr.gold))
-rownames(D.expr.gold$WEAK) <- featureData(Eg.expr.gold)$sym
-colnames(D.expr.gold$WEAK) <- featureData(Eg.expr.gold)$sym
+#D.expr.gold$WEAK <- all.pairs.weak(exprs(Eg.expr.gold))
+#rownames(D.expr.gold$WEAK) <- featureData(Eg.expr.gold)$sym
+#colnames(D.expr.gold$WEAK) <- featureData(Eg.expr.gold)$sym
 
-WEAK <- D.expr.gold$WEAK
-save(WEAK, file="../gold.weak.RData")
+#WEAK <- D.expr.gold$WEAK
+#save(WEAK, file="../gold.weak.RData")
 
-write.table(WEAK, file="../gold.weak.tab", sep="\t", quote=F, col.names=NA, row.names=T)
+#write.table(WEAK, file="../gold.weak.tab", sep="\t", quote=F, col.names=NA, row.names=T)

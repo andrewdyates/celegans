@@ -630,3 +630,88 @@ write.table(sapply(C9, function(c) length(unlist(c))), file="../all.trans.k18.C9
 ## ---
 ## plot subclusters...
 
+## why is c2 necessary for pal-1? Looks like over-compression.
+c8 <- c("cey-4", "psa-1", "pal-1", "scrt-1")
+c2 <- c("alr-1", "ceh-20", "cey-1", "chd-3", "daf-3", "dpy-22", "elt-1", "eya-1", "hlh-14", "hnd-1", "nhr-34", "nhr-46", "tag-192", "tbx-8", "die-1", "hlh-2", "nurf-1", "sdc-2", "hmg-1.1", "hmg-11", "cwn-1", "unc-37")
+CLS <- D.expr.trans$CLS
+DCOR <- D.expr.trans$DCOR
+i8 <- match(c8, rownames(CLS))
+i2 <- match(c2, rownames(CLS))
+ii <- c(i8,i2)
+
+MAN <- splom(CLS[ii,ii], DCOR[ii,ii], reorder=F)
+load("quant.all.trans.k.RData")
+flaw.fract <- ZZ$edge.flaws / ZZ$edge.all.n
+
+pdf("flaw.fract.all.trans.pdf", width=8, height=8)
+plot(flaw.fract, main="Flaw Fraction all transcription factors")
+plot(ZZ$edge.wavg[2:191], main="Weighted Average Edge Coherence")
+dev.off()
+
+# ----
+# flaw fraction: 5% of edges == k=61
+H <- as.hclust(TRANS.R$Rhclust)
+CLS <- D.expr.trans$CLS
+DCOR <- D.expr.trans$DCOR
+## ZZ <- get.compression(CLS, H, DCOR, min.dcor=0.32)
+flaw.fract <- ZZ$edge.flaws / ZZ$edge.all.n
+which(flaw.fract <= 0.05)[1] # 61
+
+idx <- cutree(H,k=61)
+R61 <- collapse.cls(CLS, idx, DCOR)
+S61 <- get.coh.M.score(R, min.dcor=0.32)
+
+pdf("../all.trans.gsplom.k61.d32.apr27.pdf", width=20, height=20)
+G61 <- splom(R61$CLS, R61$DCOR, grid=F, MIN=0.32, MAX=1, sym=T)
+dev.off()
+
+pdf("../all.trans.dendro.k61.d32.apr27.pdf", width=20, height=8)
+plot(G61$Rhclust)
+dev.off()
+
+## TODO: weak collapse
+
+write.table(R61$CLS, file="../all.trans.k61.CLS.apr28.tab", sep="\t", col.names=NA, row.names=T)
+write.table(R61$DCOR, file="../all.trans.k61.DCOR.apr28.tab", sep="\t", col.names=NA, row.names=T)
+write.table(sapply(R61$members, function(s) paste(s, collapse=" ")), file="../all.trans.k61.memberlist.csv", sep=",", col.names=NA, row.names=T)
+sizes <- sapply(R61$members, function(c) length(unlist(c)))
+pdf("../all.trans.k61.cluster.member.counts.pdf", width=10, height=10)
+barplot(sort(sizes), main="k61 Cluster Sizes", ylim=c(0,max(sizes)+2), xlab="Cluster Enumeration", ylab="Number of Genes in Cluster")
+dev.off()
+
+
+
+## listing of "tight" clusters
+write.table(sapply(QQ[[1]]$members, function(s) paste(s, collapse=" ")), file="../all.trans.k70.C1.memberlist.csv", sep=",", col.names=NA, row.names=T)
+## listing of "loose", most compressed clusters
+write.table(sapply(C9, function(s) paste(unlist(s), collapse=" ")), file="../all.trans.k18.C9.memberlist.csv", sep=",", col.names=NA, row.names=T)
+
+## 2. export C9 cluster sizes
+write.table(sapply(C9, function(c) length(unlist(c))), file="../all.trans.k18.C9.cluster.sizes.csv", sep=",", row.names=T, col.names=NA)
+
+source("all.pairs.weak.R")
+
+# 0: no class; 1: and; 2: rn4c (row necessary for col); 3: cn4r (col necessary for row); 4: xor; 5: mix, 6: no class
+D.expr.trans$WEAK <- all.pairs.weak(exprs(Eg.expr.trans))
+rownames(D.expr.trans$WEAK) <- featureData(Eg.expr.trans)$sym
+colnames(D.expr.trans$WEAK) <- featureData(Eg.expr.trans)$sym
+stopifnot(all(match(rownames(D.expr.trans$WEAK),rownames(D.expr.trans$DCOR)) == 1:191)) # OK
+
+
+## compress weak based on extant clustering
+
+WEAK <- D.expr.trans$WEAK
+write.table(WEAK, file="../alltrans.weak.tab", sep="\t", quote=F, col.names=NA, row.names=T)
+save(WEAK, file="../altrans.weak.RData")
+
+
+H <- as.hclust(TRANS.R$Rhclust)
+CLS <- D.expr.trans$CLS
+DCOR <- D.expr.trans$DCOR
+idx <- cutree(H,k=61)
+R61 <- collapse.cls(CLS, idx, DCOR)
+S61 <- get.coh.M.score(R, min.dcor=0.32)
+
+source("collapse.weak.R")
+W61 <- collapse.weak(WEAK, idx)
+write.table(W61, file="../all.trans.k61.WEAK.apr28.tab", sep="\t", col.names=NA, row.names=T)
