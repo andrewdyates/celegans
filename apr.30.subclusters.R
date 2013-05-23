@@ -100,9 +100,9 @@ hist(D)
 sd(D,na.rm=T)
 #[1] 0.08248709
 D[is.na(D)] <- 0
-> sd(D)
+sd(D)
 #[1] 0.08133567
-pdf("../dcor_diff_hist.pdf", width=6, height=6)
+pdf("../dcor_diff_hist_zeros.pdf", width=6, height=6)
 hist(D)
 dev.off()
 
@@ -197,3 +197,34 @@ sumnon <- summary(as.factor(R61$CLS.EXPAND[CLS.q][qnon]))
 #flaw.fract[61]
 #[1] 0.04754098
 ## Get edge transition matrix
+
+CLS <- D.expr.trans$CLS
+DCOR <- D.expr.trans$DCOR
+R61$DCOR.EXPAND
+R61$CLS.EXPAND
+
+# original
+EDGE <- matrix(0, nrow=dim(CLS)[1], ncol=dim(CLS)[2])
+EDGE[CLS==1 & DCOR >= 0.32] <- 1
+EDGE[CLS==2 & DCOR >= 0.32] <- 2
+EDGE[CLS==3 & DCOR >= 0.32] <- 3
+EDGE[CLS==4 & DCOR >= 0.32] <- 4
+summary(as.factor(EDGE[upper.tri(EDGE)]))
+
+# approximated
+D61 <- R61$DCOR.EXPAND
+D61[is.na(R61$DCOR.EXPAND)] <- DCOR[is.na(R61$DCOR.EXPAND)]
+C61 <- R61$CLS.EXPAND
+C61[is.na(R61$CLS.EXPAND)] <- CLS[is.na(R61$CLS.EXPAND)]
+
+E61 <- matrix(0, nrow=dim(CLS)[1], ncol=dim(CLS)[2])
+E61[C61==1 & D61 >= 0.32] <- 1
+E61[C61==2 & D61 >= 0.32] <- 2
+E61[C61==3 & D61 >= 0.32] <- 3
+E61[C61==4 & D61 >= 0.32] <- 4
+
+summary(as.factor(E61[upper.tri(E61)]))
+
+CT <- as.factor(EDGE[upper.tri(EDGE)])
+C61 <- as.factor(E61[upper.tri(E61)])
+summary(C61[CT==0])

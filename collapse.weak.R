@@ -36,7 +36,7 @@ choose.weak <- function(WEAK, sym=F) {
     else
       return(5)
   } else if (max.cnt.i[4]) {
-    if(cnt[2] == 0 && cnt[3] == 0)
+    if(cnt[2] == 0 && cnt[3] == 0 && cnt[1] == 0)
       return(4)
     else
       return(5)
