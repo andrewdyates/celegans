@@ -1,0 +1,11 @@
+#PBS -N 2180dcor
+#PBS -l nodes=1:ppn=8
+#PBS -m bea
+#PBS -l walltime=99:00:00
+#PBS -M yates.115.osu@gmail.com
+
+set -x
+cd $HOME
+source .bash_profile
+
+time python $HOME/code/all_pairs_dcor/script.py fname=/home/ayates/celegans/jun5.GSE2180.SCAN.select.tab

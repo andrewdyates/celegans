@@ -1,0 +1,71 @@
++ cd /home/ayates
++ source .bash_profile
+++ '[' -f /home/ayates/.bashrc ']'
+++ . /home/ayates/.bashrc
++++ export CLICOLOR=1
++++ CLICOLOR=1
++++ export TERM=xterm-color
++++ TERM=xterm-color
+++++ tput bold
+++++ tput setaf 2
+++++ tput sgr0
++++ export 'PS1=\[[1m\]\[[32m\]\h@\w$ \[[m\]'
++++ PS1='\[[1m\]\[[32m\]\h@\w$ \[[m\]'
++++ alias 'ls=ls --color'
++++ PATH=/home/ayates/bin:/home/ayates/R-3.0.1/bin:/home/ayates/local/virtualenv/v/bin:/home/ayates/bin:/home/ayates/R-3.0.1/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
++++ R_HOME=/home/ayates/R-3.0.1
++++ LD_LIBRARY_PATH=:/home/ayates/R-3.0.1/bin:/home/ayates/R-3.0.1/lib:/home/ayates/R-3.0.1/bin:/home/ayates/R-3.0.1/lib
++++ export CACHE_DIR=/home/ayates/.cache
++++ CACHE_DIR=/home/ayates/.cache
++++ export PYTHONPATH=/home/ayates/code:/home/ayates/code:
++++ PYTHONPATH=/home/ayates/code:/home/ayates/code:
++++ export PATH
++++ VIRTUAL_ENV_DISABLE_PROMPT=TRUE
++++ source /home/ayates/local/virtualenv/v/bin/activate
+++++ deactivate nondestructive
+++++ unset pydoc
+++++ '[' -n /home/ayates/bin:/home/ayates/R-3.0.1/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin ']'
+++++ PATH=/home/ayates/bin:/home/ayates/R-3.0.1/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+++++ export PATH
+++++ unset _OLD_VIRTUAL_PATH
+++++ '[' -n '' ']'
+++++ '[' -n /bin/bash -o -n '' ']'
+++++ hash -r
+++++ '[' -n '' ']'
+++++ unset VIRTUAL_ENV
+++++ '[' '!' nondestructive = nondestructive ']'
+++++ VIRTUAL_ENV=/home/ayates/local/virtualenv/v
+++++ export VIRTUAL_ENV
+++++ _OLD_VIRTUAL_PATH=/home/ayates/bin:/home/ayates/R-3.0.1/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+++++ PATH=/home/ayates/local/virtualenv/v/bin:/home/ayates/bin:/home/ayates/R-3.0.1/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin
+++++ export PATH
+++++ '[' -n '' ']'
+++++ '[' -z TRUE ']'
+++++ alias 'pydoc=python -m pydoc'
+++++ '[' -n /bin/bash -o -n '' ']'
+++++ hash -r
+++++ tput bold
+++++ tput setaf 2
+++++ tput sgr0
++++ export 'PS1=\[[1m\]\[[32m\]\h@\w$ \[[m\]'
++++ PS1='\[[1m\]\[[32m\]\h@\w$ \[[m\]'
++++ export 'BLAS=~/local/BLAS/libfblas.a'
++++ BLAS='~/local/BLAS/libfblas.a'
++++ export 'LAPACK=~/local/lapack-3.4.2/liblapack.a'
++++ LAPACK='~/local/lapack-3.4.2/liblapack.a'
++++ export SYS_MAX_PPN=8
++++ SYS_MAX_PPN=8
++ FNAME=/home/ayates/celegans/jun5.GSE2180.SCAN.select.tab
++ Z=0.27
++ B=0.08797455
++ ERR=2
++ python /home/ayates/code/boolean_implication_fit_py/script.py fname=/home/ayates/celegans/jun5.GSE2180.SCAN.select.tab b=0.08797455 z_th=0.27
+
+real	6m30.733s
+user	5m51.230s
+sys	0m33.104s
++ python /home/ayates/code/boolean_implication_fit_py/script_weak.py fname=/home/ayates/celegans/jun5.GSE2180.SCAN.select.tab err=2
+
+real	5m38.763s
+user	5m10.436s
+sys	0m20.140s
