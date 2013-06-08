@@ -1,0 +1,5 @@
+load("../GSE9665.ALL.RData")
+library(Biobase)
+M <- exprs(GSE9665.ALL.SCAN)
+rownames(M) <- sub("_at","", rownames(M))
+write.table(M, file="../GSE9665.entrezg.SCAN.tab", sep="\t", row.names=T, col.names=NA)

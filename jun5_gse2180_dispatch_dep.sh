@@ -1,0 +1,1 @@
+time python $HOME/pymod/dependency_matrix/compile_to_R_dispatch_wrapper.py fname=$HOME/c.elegans/jun5.GSE2180.SCAN.select.tab computers=[\"Dcor\",\"PCC\"] outdir=$HOME/c.elegans/GSE2180_jun5_dep n_nodes=10 n_ppn=12 hours=72
