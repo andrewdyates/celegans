@@ -12,6 +12,8 @@
 .DS*
 *.png
 *.Rout
+*.e*
+*.o*
 
 # Example code in package build process
 *-Ex.R

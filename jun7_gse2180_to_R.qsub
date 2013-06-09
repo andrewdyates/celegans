@@ -1,0 +1,13 @@
+#PBS -N tab2R
+#PBS -l nodes=1:ppn=8
+#PBS -m ea
+#PBS -l walltime=99:00:00
+#PBS -M yates.115.osu@gmail.com
+
+set -x
+cd $HOME
+source .bash_profile
+
+/usr/bin/time python $HOME/code/pkl_txt_RData/tab_to_RData_script.py fname=$HOME/celegans/jun5.GSE2180.SCAN.select.tab.dcor.tab
+
+

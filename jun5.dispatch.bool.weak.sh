@@ -13,5 +13,4 @@ Z=0.27
 B=0.08797455
 ERR=2
 time python $HOME/code/boolean_implication_fit_py/script.py fname=$FNAME b=$B z_th=$Z
-
 time python $HOME/code/boolean_implication_fit_py/script_weak.py fname=$FNAME err=$ERR
