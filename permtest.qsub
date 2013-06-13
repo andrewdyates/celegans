@@ -1,0 +1,14 @@
+#PBS -N permTest
+#PBS -l nodes=1:ppn=8
+#PBS -m ea
+#PBS -l walltime=99:00:00
+#PBS -M yates.115.osu@gmail.com
+
+set -x
+cd $HOME
+source .bash_profile
+
+time python $HOME/code/permutation_test/script_single.py fname=$HOME/celegans/jun5.GSE2180.SCAN.select.tab n=100000 dep=pcc > $HOME/celegans/jun5.E.GSE2180.select.RData.1e5perm.pcc.out
+time python $HOME/code/permutation_test/script_single.py fname=$HOME/celegans/jun5.GSE2180.SCAN.select.tab n=100000 dep=dcor > $HOME/celegans/jun5.E.GSE2180.select.RData.1e5perm.dcor.out
+time python $HOME/code/permutation_test/script_single.py fname=$HOME/celegans/jun5.GSE2180.SCAN.select.tab n=100000 dep=pcc do_abs=T > $HOME/celegans/jun5.GSE2180.SCAN.select.tab.1e5perm.abspcc.out
+
