@@ -30,7 +30,7 @@ qq <- match(elt1.i, rownames(Tabs[["elt-1"]]))
 write.table(cbind(Tabs[["elt-1"]][qq,],as.character(elt1.names)), file="~/Desktop/excel_aligned/elt-1.aligned.tab", quote=FALSE, sep="\t", col.names=NA)
 
 hlh.i <- readLines("~/Dropbox/biostat/local_c.elegans/entrez_orders/hlh-1.txt")
-hlh.names <- mget(paste0(elt1.i,"_at"), celegansceentrezgSYMBOL, ifnotfound=NA)
+hlh.names <- mget(paste0(hlh.i,"_at"), celegansceentrezgSYMBOL, ifnotfound=NA)
 qq <- match(hlh.i, rownames(Tabs[["hlh-1"]]))
 write.table(cbind(Tabs[["hlh-1"]][qq,],as.character(hlh.names)), file="~/Desktop/excel_aligned/hlh-1.aligned.tab", quote=FALSE, sep="\t", col.names=NA)
 
@@ -75,3 +75,56 @@ qq <- match(tbx89.i, rownames(Tabs[["tbx-8"]]))
 write.table(cbind(Tabs[["tbx-8"]][qq,],as.character(tbx89.names)), file="~/Desktop/excel_aligned/tbx-8.aligned.tab", quote=FALSE, sep="\t", col.names=NA)
 write.table(Tabs[["tbx-9"]][qq,], file="~/Desktop/excel_aligned/tbx-9.aligned.tab", quote=FALSE, sep="\t", col.names=NA)
 
+#176450 1 3 0.7984 tbx-8
+#172636 unc-120
+
+plot(M.TF[276,],M.TF[62,], xlab="tbx-8", ylab="unc-120")
+#hline(h=0.2)
+
+which(rownames(M.TF)==176450)
+#[1] 276 tbx-8
+which(rownames(M.TF)==172636)
+#[1] 62 unc-120
+
+a <- M.TF[62,]>0.2  #unc-120
+b <- M.TF[276,]>0.2 #tbx-8
+
+# col unc-120 detected necessary for tbx-8 detected
+sum(a&b)
+#[1] 39
+sum(a-(a&b)) # unc-120 detected alone
+#[1] 9
+sum(b-(a&b)) # tbx-8 detected alone
+#[1] 2
+
+tbx8 <- M.TF[rownames(M.TF)==176450,]
+unc120 <- M.TF[rownames(M.TF)==172636,]
+nob1 <- M.TF[rownames(M.TF)==176641,]
+source("~/Dropbox/biostat/git_repos/boolean_implication_fit/bool.R")
+source("~/Dropbox/biostat/git_repos/boolean_implication_fit/step.up.R")
+R.tbx8 <- fit.upstep(tbx8)     # R.tbx8$th
+R.unc120 <- fit.upstep(unc120) # R.unc120$th
+R.nob1 <- fit.upstep(nob1)     # R.nob1$th
+b<-0.0880
+
+plot(tbx8,unc120)
+pdf("~/Desktop/tbx8.unc120.pdf")
+cls.pair(x=tbx8, y=unc120, x.th=R.tbx8$th, y.th=R.unc120$th, xlab="tbx8", ylab="unc120", Z=2, b.x=b, b.y=b, do.plot=T)
+dev.off()
+
+pdf("~/Desktop/unc120.tbx8.pdf")
+cls.pair(x=unc120, y=tbx8, x.th=R.unc120$th, y.th=R.tbx8$th, xlab="unc120", ylab="tbx8", Z=2, b.x=b, b.y=b, do.plot=T)
+abline(v=0.2, col="green", lwd=1)
+abline(h=0.2, col="green", lwd=2)
+dev.off()
+
+pdf("~/Desktop/nob1.tbx8.pdf")
+cls.pair(x=nob1, y=tbx8, x.th=R.nob1$th, y.th=R.tbx8$th, xlab="nob1", ylab="tbx8", Z=2, b.x=b, b.y=b, do.plot=T)
+abline(v=0.2, col="green", lwd=1)
+abline(h=0.2, col="green", lwd=2)
+dev.off()
+
+
+ee <- c(172844,172981,174341,174614,176020,177016,178465,178919,179399,179589,180324,180431,181229,181302,185718,187182,187186,191703,191719,172432,172728,176450,172626,172981,174341,174614,174721,175612,176241,176632,177016,177618,178919,179276,179399,180324,180848,181229,181529,181551,184557,185593,185718,186627,191149,191703,191719,172432,184793,176450)
+
+nn <- mget(paste0(as.character(ee),"_at"), celegansceentrezgSYMBOL, ifnotfound=NA)
