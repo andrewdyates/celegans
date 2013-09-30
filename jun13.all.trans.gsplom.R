@@ -9,7 +9,7 @@ load("../jun5.GSE2180.SCAN.select.tab.dcor.tab.RData")
 DCOR <- M
 load("../jun5.GSE2180.SCAN.select.tab.b0.0880.z0.27.bool.tab.RData")
 BOOL.BAD <- M
-load("../jun5.GSE2180.SCAN.select.tab.b0.0880.z2.00.bool.tab.RData")
+load("../jun5.GSE2180.SCAN.select.tab.b0.0880.z2.00.bool.tab.RData") # note: we use b=0.0880, z=2 for BOOL
 BOOL <- M
 load("../jun5.GSE2180.SCAN.select.tab.err2.th0.2000.weak.tab.RData")
 WEAK <- M
