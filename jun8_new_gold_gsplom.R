@@ -21,7 +21,7 @@ qq <- na.omit(match(gold.genes, SYMS))
 # Verify that dCor and Bool values are as expected by reconstructing GOLD gsplom
 GOLD.M <- exprs(E.GSE2180.SCAN)[qq,]
 rownames(GOLD.M) <- SYMS[qq]
-write.table(GOLD.M, file="~/new.gold.celegans.tab", sep="\t", quote=F)
+write.table(GOLD.M, file="~/dec6.gold.celegans.tab", sep="\t", quote=F)
 
 SYMS[qq[1]]
 SYMS[qq[2]]
